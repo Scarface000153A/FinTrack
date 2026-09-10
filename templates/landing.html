@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}FinTrack - Modern Personal Finance & Currency Intelligence{% endblock %}
+
+{% block content %}
+<div class="landing-page-wrapper">
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+        <div class="hero-badge">
+            <i class="fa-solid fa-sparkles"></i>
+            <span>The Modern Personal Finance Platform</span>
+        </div>
+        <h1 class="hero-title">
+            Take Complete Control of Your Wealth in <span class="gradient-text">Real Time</span>
+        </h1>
+        <p class="hero-subtitle">
+            Log incomes, track expenses, convert between global currencies with live exchange rates, and visualize your financial growth in a private, secure sandbox.
+        </p>
+        <div class="hero-cta-group">
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-hero">
+                <span>Get Started for Free</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline btn-hero">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                <span>Sign In to Dashboard</span>
+            </a>
+        </div>
+        <div class="hero-trust-indicators">
+            <div class="trust-item"><i class="fa-solid fa-shield-halved text-positive"></i> 100% Data Isolation</div>
+            <div class="trust-item"><i class="fa-solid fa-bolt text-accent"></i> Real-time Exchange Rates</div>
+            <div class="trust-item"><i class="fa-solid fa-download text-info"></i> 1-Click CSV & JSON Export</div>
+        </div>
+
+        <!-- HERO INTERACTIVE DEMO PREVIEW CARD -->
+        <div class="hero-mockup-container">
+            <div class="mockup-window">
+                <div class="mockup-header">
+                    <div class="mockup-dots">
+                        <span class="dot dot-red"></span>
+                        <span class="dot dot-yellow"></span>
+                        <span class="dot dot-green"></span>
+                    </div>
+                    <div class="mockup-url-bar">
+                        <i class="fa-solid fa-lock text-positive"></i>
+                        <span>https://fintrack.ai/dashboard</span>
+                    </div>
+                    <div class="mockup-currency-badge">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i> Live Conversion: USD &bull; INR &bull; EUR
+                    </div>
+                </div>
+                <div class="mockup-body">
+                    <div class="mock-kpi-row">
+                        <div class="mock-kpi-card">
+                            <span class="mock-kpi-label">Current Net Balance</span>
+                            <h3 class="mock-kpi-val text-positive">₹1,24,500.00</h3>
+                            <span class="mock-kpi-sub">&asymp; $1,308.85 USD</span>
+                        </div>
+                        <div class="mock-kpi-card">
+                            <span class="mock-kpi-label">Total Income</span>
+                            <h3 class="mock-kpi-val text-positive">+₹1,80,000.00</h3>
+                            <span class="mock-kpi-sub">Salary & Freelance</span>
+                        </div>
+                        <div class="mock-kpi-card">
+                            <span class="mock-kpi-label">Total Expenses</span>
+                            <h3 class="mock-kpi-val text-negative">-₹55,500.00</h3>
+                            <span class="mock-kpi-sub">Living & Dining</span>
+                        </div>
+                        <div class="mock-kpi-card">
+                            <span class="mock-kpi-label">Savings Rate</span>
+                            <h3 class="mock-kpi-val text-accent">69.2%</h3>
+                            <span class="mock-kpi-sub">&uarr; 4.8% from last month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CORE FEATURES GRID -->
+    <section class="features-section">
+        <div class="section-header text-center">
+            <span class="section-eyebrow">Key Capabilities</span>
+            <h2 class="section-title">Everything You Need to Manage Your Finances</h2>
+            <p class="section-subtitle">Engineered for speed, privacy, and seamless multi-currency intelligence.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon bg-indigo">
+                    <i class="fa-solid fa-earth-americas"></i>
+                </div>
+                <h3>Live Currency Conversion</h3>
+                <p>Add amounts in INR, USD, EUR, GBP, JPY, AED, CAD, or AUD. Switch display currencies anytime with live real-time rates.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon bg-emerald">
+                    <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <h3>Visual Cashflow Analytics</h3>
+                <p>Interactive Doughnut and Bar charts visually break down your spending by category and compare your income against expenses.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon bg-violet">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <h3>Strict User Sandbox</h3>
+                <p>Multi-user architecture with encrypted passwords and isolated database records. No user ever sees another user's financial details.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon bg-rose">
+                    <i class="fa-solid fa-file-csv"></i>
+                </div>
+                <h3>1-Click Data Export</h3>
+                <p>Download your complete transaction history in Excel-ready CSV or JSON formats for tax filing, spreadsheet analysis, or personal backup.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon bg-amber">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                </div>
+                <h3>Installable App (PWA)</h3>
+                <p>Install FinTrack on your iPhone, Android, or PC as a native standalone app with lightning-fast offline caching.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon bg-cyan">
+                    <i class="fa-solid fa-moon"></i>
+                </div>
+                <h3>Dark & Light Theme Engine</h3>
+                <p>Switch between OLED Dark Mode and Clean Light Mode with automatic Chart.js palette adaptation and saved browser preferences.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS SECTION -->
+    <section class="how-it-works-section">
+        <div class="section-header text-center">
+            <span class="section-eyebrow">Simplicity First</span>
+            <h2 class="section-title">How FinTrack Works in 3 Steps</h2>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3>Create Your Free Account</h3>
+                <p>Sign up in 10 seconds. Select your default preferred currency and start with a clean, private slate.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3>Log Incomes & Expenses</h3>
+                <p>Add earnings and purchases with custom categories, descriptions, and dates in any global currency.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3>Track Growth & Convert</h3>
+                <p>Watch your live net balance, monitor savings rate, switch currencies dynamically, and export reports anytime.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ ACCORDION SECTION -->
+    <section class="faq-section">
+        <div class="section-header text-center">
+            <span class="section-eyebrow">Got Questions?</span>
+            <h2 class="section-title">Frequently Asked Questions</h2>
+        </div>
+
+        <div class="faq-accordion">
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>Is my financial data kept separate from other users?</span>
+                    <i class="fa-solid fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes, absolutely! Each user account has an isolated sandbox in the database. Transactions and balances are partitioned strictly by your unique user ID and protected with cryptographic password hashing.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>How does real-time currency conversion work?</span>
+                    <i class="fa-solid fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Every transaction stores the currency it was recorded in. When you switch your display currency in the top bar, FinTrack dynamically converts all transactions, totals, and charts using live exchange rates.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>Can I export my financial records to Excel or CSV?</span>
+                    <i class="fa-solid fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes! With one click from your dashboard, you can export your entire transaction history to Excel-compatible CSV or structured JSON format.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>Can I install this on my smartphone or computer?</span>
+                    <i class="fa-solid fa-chevron-down faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes! FinTrack is a Progressive Web App (PWA). On mobile, tap 'Add to Home Screen' in Safari/Chrome. On desktop, click the install icon in the browser address bar to install it as a standalone app.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BOTTOM CALL TO ACTION -->
+    <section class="bottom-cta-section">
+        <div class="bottom-cta-card">
+            <h2>Ready to Elevate Your Financial Clarity?</h2>
+            <p>Join thousands of smart individuals managing their personal wealth with FinTrack.</p>
+            <div class="cta-actions">
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                    <span>Create Your Free Account</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
