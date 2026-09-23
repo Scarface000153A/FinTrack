@@ -10,7 +10,7 @@ import csv
 import json
 import urllib.request
 import time
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from functools import wraps
 from flask import (
     Flask, render_template, request, redirect, 
@@ -21,8 +21,13 @@ from database import get_db, init_db
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "fintrack_super_secret_production_key_2026")
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+if os.environ.get("RENDER") or os.environ.get("DYNO"):
+    app.config['SESSION_COOKIE_SECURE'] = True
 
-# Initialize SQLite database on startup
+# Initialize database schema on startup
 init_db()
 
 # ----------------- CURRENCY ENGINE & LIVE EXCHANGE RATES ----------------- #
@@ -145,6 +150,17 @@ def login_required(f):
         if "user_id" not in session:
             flash("Please log in to access this page.", "warning")
             return redirect(url_for("login"))
+        try:
+            with get_db() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT id FROM users WHERE id = ?", (session["user_id"],))
+                if not cursor.fetchone():
+                    session.clear()
+                    flash("Your session has expired or the database was refreshed. Please log in again.", "info")
+                    return redirect(url_for("login"))
+        except Exception:
+            session.clear()
+            return redirect(url_for("login"))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -152,18 +168,33 @@ def login_required(f):
 @app.context_processor
 def inject_user():
     if "user_id" in session:
-        curr_code = normalize_currency_code(session.get("currency", "INR"))
-        return {
-            "current_user": {
-                "id": session.get("user_id"),
-                "username": session.get("username"),
-                "full_name": session.get("full_name"),
-                "currency_code": curr_code,
-                "currency": get_currency_symbol(curr_code),
-                "currency_symbol": get_currency_symbol(curr_code)
-            },
-            "available_currencies": CURRENCIES
-        }
+        try:
+            with get_db() as conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    "SELECT id, username, full_name, currency FROM users WHERE id = ?",
+                    (session["user_id"],)
+                )
+                user = cursor.fetchone()
+            if not user:
+                session.clear()
+                return {"current_user": None, "available_currencies": CURRENCIES}
+
+            curr_code = normalize_currency_code(user["currency"])
+            return {
+                "current_user": {
+                    "id": user["id"],
+                    "username": user["username"],
+                    "full_name": user["full_name"],
+                    "currency_code": curr_code,
+                    "currency": get_currency_symbol(curr_code),
+                    "currency_symbol": get_currency_symbol(curr_code)
+                },
+                "available_currencies": CURRENCIES
+            }
+        except Exception:
+            session.clear()
+            return {"current_user": None, "available_currencies": CURRENCIES}
     return {"current_user": None, "available_currencies": CURRENCIES}
 
 # ----------------- PUBLIC & AUTHENTICATION ROUTES ----------------- #
@@ -174,6 +205,16 @@ def index():
     if "user_id" in session:
         return redirect(url_for("dashboard"))
     return render_template("landing.html")
+
+@app.route("/terms")
+def terms():
+    """Terms and Conditions page."""
+    return render_template("terms.html")
+
+@app.route("/privacy")
+def privacy():
+    """Privacy Policy page."""
+    return render_template("privacy.html")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -214,13 +255,25 @@ def register():
                     (username, email, full_name, password_hash, currency)
                 )
                 conn.commit()
-            
-            flash("Registration successful! You can now log in.", "success")
-            return redirect(url_for("login"))
+                cursor.execute(
+                    "SELECT id, username, full_name, currency FROM users WHERE username = ?",
+                    (username,)
+                )
+                new_user = cursor.fetchone()
+
+            session.clear()
+            session.permanent = True
+            session["user_id"] = new_user["id"]
+            session["username"] = new_user["username"]
+            session["full_name"] = new_user["full_name"]
+            session["currency"] = normalize_currency_code(new_user["currency"])
+
+            flash(f"Welcome to FinTrack, {new_user['full_name']}! Your account has been created.", "success")
+            return redirect(url_for("dashboard"))
         except Exception as e:
-            if "UNIQUE constraint failed: users.username" in str(e):
+            if "UNIQUE constraint failed: users.username" in str(e) or "unique constraint" in str(e).lower():
                 flash("Username is already taken. Please choose another.", "danger")
-            elif "UNIQUE constraint failed: users.email" in str(e):
+            elif "UNIQUE constraint failed: users.email" in str(e) or "unique constraint" in str(e).lower():
                 flash("An account with this email already exists.", "danger")
             else:
                 flash("An error occurred during registration. Please try again.", "danger")
@@ -255,6 +308,7 @@ def login():
 
         if user and check_password_hash(user["password_hash"], password):
             session.clear()
+            session.permanent = True
             session["user_id"] = user["id"]
             session["username"] = user["username"]
             session["full_name"] = user["full_name"]
@@ -550,7 +604,7 @@ def export_json():
         records = cursor.fetchall()
 
     data = {
-        "app": "FinTrack.ai",
+        "app": "FinTrack",
         "exported_at": datetime.now().isoformat(),
         "user": {
             "username": session.get("username"),
@@ -623,7 +677,7 @@ def chart_data():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     print(f"\n=======================================================")
-    print(f" FinTrack.ai Server running at http://127.0.0.1:{port}")
+    print(f" FinTrack Server running at http://127.0.0.1:{port}")
     print(f" Press Ctrl+C to stop the server.")
     print(f"=======================================================\n")
     app.run(host="0.0.0.0", port=port, debug=False)

@@ -205,9 +205,9 @@ function initDashboardCharts(totalIncome, totalExpense, expenseLabels, expenseDa
         }
 
         const colorPalette = [
-            "#ef4444", "#f97316", "#f59e0b", "#10b981", 
-            "#06b6d4", "#3b82f6", "#6366f1", "#8b5cf6", 
-            "#d946ef", "#64748b"
+            "#2563eb", "#0284c7", "#0d9488", "#10b981", 
+            "#84cc16", "#eab308", "#f97316", "#e11d48", 
+            "#475569", "#64748b"
         ];
 
         chartExpenseInstance = new Chart(expenseCanvas, {

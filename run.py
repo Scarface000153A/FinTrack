@@ -13,6 +13,6 @@ def open_browser():
     webbrowser.open("http://127.0.0.1:5000")
 
 if __name__ == "__main__":
-    print("\n[FinTrack.ai] Starting server and launching browser...")
+    print("\n[FinTrack] Starting server and launching browser...")
     threading.Thread(target=open_browser, daemon=True).start()
     app.run(host="127.0.0.1", port=5000, debug=False)

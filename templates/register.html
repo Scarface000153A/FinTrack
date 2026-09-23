@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Create Account - FinTrack Personal Finance{% endblock %}
+{% block title %}Create Account - FinTrack{% endblock %}
 
 {% block content %}
 <div class="auth-page-wrapper">
@@ -68,14 +68,14 @@
                     <div class="input-with-icon">
                         <i class="fa-solid fa-coins input-icon"></i>
                         <select id="currency" name="currency" class="form-select">
-                            <option value="INR" selected>₹ - Indian Rupee (INR)</option>
-                            <option value="USD">$ - US Dollar (USD)</option>
-                            <option value="EUR">€ - Euro (EUR)</option>
-                            <option value="GBP">£ - British Pound (GBP)</option>
-                            <option value="JPY">¥ - Japanese Yen (JPY)</option>
-                            <option value="AED">AED - UAE Dirham</option>
-                            <option value="CAD">C$ - Canadian Dollar (CAD)</option>
-                            <option value="AUD">A$ - Australian Dollar (AUD)</option>
+                            <option value="INR" selected>INR - Indian Rupee (INR)</option>
+                            <option value="USD">USD - US Dollar (USD)</option>
+                            <option value="EUR">EUR - Euro (EUR)</option>
+                            <option value="GBP">GBP - British Pound (GBP)</option>
+                            <option value="JPY">JPY - Japanese Yen (JPY)</option>
+                            <option value="AED">AED - UAE Dirham (AED)</option>
+                            <option value="CAD">CAD - Canadian Dollar (CAD)</option>
+                            <option value="AUD">AUD - Australian Dollar (AUD)</option>
                         </select>
                     </div>
                 </div>
@@ -127,6 +127,9 @@
 
         <div class="auth-footer">
             <p>Already have an account? <a href="{{ url_for('login') }}">Sign in here</a></p>
+            <p class="terms-notice" style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">
+                By registering, you agree to our <a href="{{ url_for('terms') }}">Terms</a> and <a href="{{ url_for('privacy') }}">Privacy Policy</a>.
+            </p>
         </div>
     </div>
 </div>

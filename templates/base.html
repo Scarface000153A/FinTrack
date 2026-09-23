@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}FinTrack - Personal Finance & Currency Intelligence{% endblock %}</title>
+    <title>{% block title %}FinTrack - Personal Finance Tracker{% endblock %}</title>
     
+    <!-- Site Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+
     <!-- PWA & Mobile Meta Tags -->
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
-    <meta name="theme-color" content="#4f46e5">
+    <meta name="theme-color" content="#2563eb">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="FinTrack">
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2953/2953363.png">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicon.svg') }}">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,7 +47,7 @@
                 <div class="brand-icon">
                     <i class="fa-solid fa-wallet"></i>
                 </div>
-                <span>FinTrack<span class="brand-accent">.ai</span></span>
+                <span>FinTrack</span>
             </a>
 
             {% if current_user %}
@@ -176,13 +179,17 @@
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-left">
-                <p>&copy; 2026 <strong>FinTrack.ai</strong> &mdash; Modern Personal Finance & Currency Intelligence.</p>
-                <p class="data-privacy"><i class="fa-solid fa-lock"></i> Isolated User Sandbox &bull; Real-time Exchange Rates</p>
+                <p>&copy; 2026 <strong>FinTrack</strong> - Personal Finance Platform.</p>
+                <p class="data-privacy"><i class="fa-solid fa-lock"></i> Isolated User Sandbox &bull; Live Currency Conversion</p>
             </div>
             <div class="footer-links">
                 <a href="{% if current_user %}{{ url_for('dashboard') }}{% else %}{{ url_for('index') }}{% endif %}">Home</a>
+                {% if not current_user %}
                 <a href="{{ url_for('register') }}">Register</a>
                 <a href="{{ url_for('login') }}">Sign In</a>
+                {% endif %}
+                <a href="{{ url_for('terms') }}">Terms</a>
+                <a href="{{ url_for('privacy') }}">Privacy Policy</a>
             </div>
         </div>
     </footer>

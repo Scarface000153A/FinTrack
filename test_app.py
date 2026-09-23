@@ -33,7 +33,7 @@ class FinanceTrackerTestCase(unittest.TestCase):
         # 1. Unauthenticated guest visiting '/' should see the SaaS landing page
         res = self.client.get('/')
         self.assertEqual(res.status_code, 200)
-        self.assertIn(b'Take Complete Control of Your Wealth', res.data)
+        self.assertIn(b'Track Personal Income, Expenses', res.data)
         self.assertIn(b'FinTrack', res.data)
 
         # 2. Unauthenticated guest visiting '/dashboard' should be redirected to login
@@ -65,6 +65,36 @@ class FinanceTrackerTestCase(unittest.TestCase):
         res = self.client.get('/dashboard')
         self.assertEqual(res.status_code, 200)
         self.assertIn(b'Personal Finance Dashboard', res.data)
+
+    def test_terms_and_privacy_pages(self):
+        # Terms and conditions page
+        res_terms = self.client.get('/terms')
+        self.assertEqual(res_terms.status_code, 200)
+        self.assertIn(b'Terms and Conditions', res_terms.data)
+        self.assertIn(b'Acceptance of Terms', res_terms.data)
+        self.assertIn(b'Financial Disclaimer', res_terms.data)
+
+        # Privacy policy page
+        res_privacy = self.client.get('/privacy')
+        self.assertEqual(res_privacy.status_code, 200)
+        self.assertIn(b'Privacy Policy', res_privacy.data)
+        self.assertIn(b'Information We Collect', res_privacy.data)
+        self.assertIn(b'Data Protection', res_privacy.data)
+
+    def test_no_em_dashes_or_ai_branding(self):
+        # Verify rendered public pages do not contain em dashes or "FinTrack.ai"
+        for endpoint in ['/', '/terms', '/privacy', '/login', '/register']:
+            res = self.client.get(endpoint)
+            html_text = res.data.decode('utf-8', errors='ignore')
+            self.assertNotIn('\u2014', html_text, f"Em dash found in {endpoint}")
+            self.assertNotIn('&mdash;', html_text, f"&mdash; found in {endpoint}")
+            self.assertNotIn('FinTrack.ai', html_text, f"FinTrack.ai branding found in {endpoint}")
+            self.assertNotIn('made with AI', html_text.lower(), f"Made with AI tag found in {endpoint}")
+
+    def test_favicon_accessible(self):
+        res = self.client.get('/static/favicon.svg')
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(res.content_type.startswith('image/svg+xml'))
 
     def test_full_user_flow_with_currency_conversion(self):
         rates = get_exchange_rates()
@@ -119,6 +149,11 @@ class FinanceTrackerTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
 
         # 6. Switch currency back to INR
+        res = self.client.post('/settings/currency', data={
+            'currency': 'INR'
+        }, follow_redirects=True)
+        self.assertEqual
+                # 6. Switch currency back to INR
         res = self.client.post('/settings/currency', data={
             'currency': 'INR'
         }, follow_redirects=True)
@@ -219,6 +254,36 @@ class FinanceTrackerTestCase(unittest.TestCase):
         self.assertNotIn(b'9999.00', res.data)
         self.assertIn(b'0 Records', res.data)
 
+    def test_session_persistence_and_cleanup(self):
+        # 1. Register user
+        res = self.client.post('/register', data={
+            'full_name': 'Persistent User',
+            'username': 'persistent',
+            'email': 'persist@test.com',
+            'password': 'password123',
+            'confirm_password': 'password123',
+            'currency': 'USD'
+        }, follow_redirects=True)
+        self.assertEqual(res.status_code, 200)
+
+        # Verify session is permanent and dashboard is accessible
+        with self.client.session_transaction() as sess:
+            self.assertTrue(sess.permanent)
+            self.assertEqual(sess['username'], 'persistent')
+
+        # 2. Simulate database wipe / stale user ID
+        with get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM users;")
+
+        # Visiting dashboard with a stale session should cleanly redirect to login
+        res = self.client.get('/dashboard', follow_redirects=False)
+        self.assertEqual(res.status_code, 302)
+        self.assertTrue(res.location.endswith('/login'))
+
+        # Session should be wiped cleanly
+        with self.client.session_transaction() as sess:
+            self.assertNotIn('user_id', sess)
+
 if __name__ == '__main__':
     unittest.main()
-
