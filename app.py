@@ -411,6 +411,143 @@ def dashboard():
         for cat, amt in sorted(expense_by_category_dict.items(), key=lambda x: x[1], reverse=True)
     ]
 
+    # ---------------- REACT DASHBOARD ANALYTICS ---------------- #
+    # Daily net cash-flow series for the last 60 days, plus period-over-period
+    # deltas (last 30 days vs prior 30 days) used by the shadcn dashboard-4.
+    today = date.today()
+    series_days = 60
+    window_start = today - timedelta(days=series_days - 1)
+
+    daily_income = {}
+    daily_expense = {}
+    for t in all_raw_transactions:
+        try:
+            tx_date = datetime.strptime(str(t["date"]), "%Y-%m-%d").date()
+        except (ValueError, TypeError):
+            continue
+        if tx_date < window_start or tx_date > today:
+            continue
+        key = tx_date.isoformat()
+        raw_amt = float(t["amount"])
+        raw_curr = normalize_currency_code(
+            t["currency"] if "currency" in t.keys() and t["currency"] else active_currency
+        )
+        converted_amt = convert_amount(raw_amt, raw_curr, active_currency)
+        if t["type"] == "income":
+            daily_income[key] = daily_income.get(key, 0.0) + converted_amt
+        else:
+            daily_expense[key] = daily_expense.get(key, 0.0) + converted_amt
+
+    chart_series = []
+    running_balance = 0.0
+    for offset in range(series_days):
+        day = window_start + timedelta(days=offset)
+        key = day.isoformat()
+        day_income = round(daily_income.get(key, 0.0), 2)
+        day_expense = round(daily_expense.get(key, 0.0), 2)
+        running_balance += day_income - day_expense
+        chart_series.append({
+            "date": key,
+            "label": day.strftime("%b %d"),
+            "income": day_income,
+            "expenses": day_expense,
+            "net": round(day_income - day_expense, 2),
+            "balance": round(running_balance, 2),
+        })
+
+    # Period-over-period comparison (last 30 days vs the 30 days before that)
+    recent_start = today - timedelta(days=29)
+    prior_start = today - timedelta(days=59)
+
+    recent_income = recent_expense = 0.0
+    prior_income = prior_expense = 0.0
+    for t in all_raw_transactions:
+        try:
+            tx_date = datetime.strptime(str(t["date"]), "%Y-%m-%d").date()
+        except (ValueError, TypeError):
+            continue
+        if tx_date < prior_start or tx_date > today:
+            continue
+        raw_amt = float(t["amount"])
+        raw_curr = normalize_currency_code(
+            t["currency"] if "currency" in t.keys() and t["currency"] else active_currency
+        )
+        converted_amt = convert_amount(raw_amt, raw_curr, active_currency)
+        if tx_date >= recent_start:
+            if t["type"] == "income":
+                recent_income += converted_amt
+            else:
+                recent_expense += converted_amt
+        else:
+            if t["type"] == "income":
+                prior_income += converted_amt
+            else:
+                prior_expense += converted_amt
+
+    def _delta_pct(current, previous):
+        if previous <= 0:
+            return 0.0 if current <= 0 else 100.0
+        return round(((current - previous) / previous) * 100, 1)
+
+    recent_net = recent_income - recent_expense
+    prior_net = prior_income - prior_expense
+
+    # Transaction counts for the period-over-period cards
+    recent_tx_count = 0
+    prior_tx_count = 0
+    for t in all_raw_transactions:
+        try:
+            tx_date = datetime.strptime(str(t["date"]), "%Y-%m-%d").date()
+        except (ValueError, TypeError):
+            continue
+        if tx_date >= recent_start:
+            recent_tx_count += 1
+        elif tx_date >= prior_start:
+            prior_tx_count += 1
+
+    recent_avg_tx = (recent_income / recent_tx_count) if recent_tx_count else 0.0
+    prior_avg_tx = (prior_income / prior_tx_count) if prior_tx_count else 0.0
+
+    recent_savings_rate = round((recent_net / recent_income * 100), 2) if recent_income > 0 else 0.0
+    prior_savings_rate = round((prior_net / prior_income * 100), 2) if prior_income > 0 else 0.0
+
+    top_categories = [
+        {
+            "name": item["category"],
+            "amount": item["total"],
+            "share": round((item["total"] / total_expense * 100), 1) if total_expense > 0 else 0.0,
+        }
+        for item in expense_by_category[:5]
+    ]
+
+    react_dashboard_data = {
+        "currency": {
+            "code": active_currency,
+            "symbol": get_currency_symbol(active_currency),
+        },
+        "totals": {
+            "income": round(total_income, 2),
+            "expenses": round(total_expense, 2),
+            "balance": round(balance, 2),
+            "savingsRate": savings_rate,
+        },
+        "stats": {
+            "totalRevenue": round(recent_income, 2),
+            "totalRevenueDelta": _delta_pct(recent_income, prior_income),
+            "transactionCount": recent_tx_count,
+            "transactionCountDelta": _delta_pct(recent_tx_count, prior_tx_count),
+            "averageTransaction": round(recent_avg_tx, 2),
+            "averageTransactionDelta": _delta_pct(recent_avg_tx, prior_avg_tx),
+            "savingsRate": recent_savings_rate,
+            "savingsRateDelta": round(recent_savings_rate - prior_savings_rate, 2),
+        },
+        "comparisonLabel": "vs prior 30 days",
+        "series": chart_series,
+        "topCategories": top_categories,
+        "expenseRatio": round((total_expense / total_income * 100), 1) if total_income > 0 else 0.0,
+        "refundRatio": 0.0,
+    }
+
     return render_template(
         "dashboard.html",
         transactions=converted_transactions,
@@ -422,7 +559,8 @@ def dashboard():
         available_categories=available_categories,
         filter_type=filter_type,
         filter_category=filter_category,
-        today_date=date.today().isoformat()
+        today_date=date.today().isoformat(),
+        react_dashboard_data=json.dumps(react_dashboard_data)
     )
 
 @app.route("/dashboard/advanced")

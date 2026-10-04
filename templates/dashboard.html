@@ -41,179 +41,10 @@
         </div>
     </div>
 
-    <!-- Quick Stats / KPI Cards -->
-    <div class="kpi-grid">
-        <div class="kpi-card card-balance">
-            <div class="kpi-icon"><i class="fa-solid fa-scale-balanced"></i></div>
-            <div class="kpi-content">
-                <span class="kpi-label">Current Net Balance</span>
-                <h2 class="kpi-value {% if balance >= 0 %}text-positive{% else %}text-negative{% endif %}">
-                    {{ current_user.currency_symbol }}{{ "%.2f"|format(balance) }}
-                </h2>
-                <span class="kpi-subtext">Calculated in {{ current_user.currency_code }}</span>
-            </div>
-        </div>
 
-        <div class="kpi-card card-income">
-            <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
-            <div class="kpi-content">
-                <span class="kpi-label">Total Money Added (Income)</span>
-                <h2 class="kpi-value text-positive">
-                    +{{ current_user.currency_symbol }}{{ "%.2f"|format(total_income) }}
-                </h2>
-                <span class="kpi-subtext">All received earnings & deposits</span>
-            </div>
-        </div>
-
-        <div class="kpi-card card-expense">
-            <div class="kpi-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
-            <div class="kpi-content">
-                <span class="kpi-label">Total Money Withdrawn (Expenses)</span>
-                <h2 class="kpi-value text-negative">
-                    -{{ current_user.currency_symbol }}{{ "%.2f"|format(total_expense) }}
-                </h2>
-                <span class="kpi-subtext">All withdrawals & expenses spent</span>
-            </div>
-        </div>
-
-        <div class="kpi-card card-savings">
-            <div class="kpi-icon"><i class="fa-solid fa-piggy-bank"></i></div>
-            <div class="kpi-content">
-                <span class="kpi-label">Savings Rate</span>
-                <h2 class="kpi-value text-accent">{{ savings_rate }}%</h2>
-                <div class="progress-bar-container">
-                    <div class="progress-bar-fill" data-progress="{{ savings_rate }}"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts & Analytics Section -->
-    <div class="widget-customizer-toolbar">
-        <div class="widget-customizer-info">
-            <i class="fa-solid fa-grip-vertical"></i>
-            <span><strong>Customizable Dashboard:</strong> Drag and drop cards to rearrange your analytics workspace freely.</span>
-        </div>
-        <div class="widget-customizer-actions">
-            <button type="button" class="btn btn-sm btn-outline text-xs" onclick="resetWidgetLayout()">
-                <i class="fa-solid fa-rotate-left"></i>
-                <span>Reset Layout</span>
-            </button>
-        </div>
-    </div>
-
-    <div class="analytics-grid" id="dashboard-analytics" 
-         data-income="{{ total_income }}" 
-         data-expense="{{ total_expense }}" 
-         data-currency="{{ current_user.currency_symbol }}">
-        
-        <!-- Animated Flow Overview Card -->
-        <div class="animated-card-container draggable-widget" data-widget-id="flow-overview">
-            <span class="widget-drag-handle"><i class="fa-solid fa-grip-vertical"></i> Drag</span>
-            <div class="card-header">
-                <h3><i class="fa-solid fa-compass"></i> Cash Flow Overview</h3>
-                <span class="badge badge-count">{{ current_user.currency_code }}</span>
-            </div>
-
-            <div class="animated-card-stage">
-                <div class="animated-card-svg-wrapper">
-                    <svg id="animated-dots-svg" class="animated-card-svg" viewBox="0 0 448 448" aria-hidden="true"></svg>
-
-                    <!-- Center Text Overlay -->
-                    <div class="animated-card-overlay">
-                        <div class="animated-card-overlay-label">TOTAL BALANCE</div>
-                        <div class="animated-card-overlay-val">
-                            {{ current_user.currency_symbol }}{{ "%.2f"|format(balance) }}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Gradient Fade Overlay -->
-                <div class="animated-card-gradient-fade"></div>
-            </div>
-
-            <!-- Bottom Section -->
-            <div class="animated-card-bottom">
-                <div class="animated-card-metrics-row">
-                    <!-- Income Column -->
-                    <div class="animated-card-metric-col">
-                        <div class="animated-card-metric-header">
-                            <span class="animated-card-pill-bar" style="background-color: #5A8CEF;"></span>
-                            <span class="animated-card-metric-title">Income</span>
-                        </div>
-                        <div class="animated-card-metric-val">
-                            +{{ current_user.currency_symbol }}{{ "%.2f"|format(total_income) }}
-                        </div>
-                        <span class="animated-card-metric-tag" style="color: #5A8CEF;">
-                            {% if total_income + total_expense > 0 %}
-                                {{ "%.1f"|format((total_income / (total_income + total_expense)) * 100) }}% flow
-                            {% else %}
-                                Active
-                            {% endif %}
-                        </span>
-                    </div>
-
-                    <!-- Expenses Column -->
-                    <div class="animated-card-metric-col">
-                        <div class="animated-card-metric-header">
-                            <span class="animated-card-pill-bar" style="background-color: #4B7A63;"></span>
-                            <span class="animated-card-metric-title">Expenses</span>
-                        </div>
-                        <div class="animated-card-metric-val">
-                            -{{ current_user.currency_symbol }}{{ "%.2f"|format(total_expense) }}
-                        </div>
-                        <span class="animated-card-metric-tag" style="color: #4B7A63;">
-                            {% if total_income + total_expense > 0 %}
-                                {{ "%.1f"|format((total_expense / (total_income + total_expense)) * 100) }}% flow
-                            {% else %}
-                                Active
-                            {% endif %}
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Action Button -->
-                <button type="button" class="animated-card-details-btn" onclick="document.querySelector('.transactions-card').scrollIntoView({ behavior: 'smooth' })">
-                    <span>View Transaction Ledger</span>
-                    <i class="fa-solid fa-arrow-down text-xs"></i>
-                </button>
-            </div>
-        </div>
-
-        <div class="content-card chart-card draggable-widget" data-widget-id="expense-chart">
-            <span class="widget-drag-handle"><i class="fa-solid fa-grip-vertical"></i> Drag</span>
-            <div class="card-header">
-                <h3><i class="fa-solid fa-chart-pie"></i> Expense Breakdown ({{ current_user.currency_code }})</h3>
-            </div>
-            <div class="card-body chart-body">
-                {% if expense_by_category %}
-                <canvas id="expenseCategoryChart"></canvas>
-                {% else %}
-                <div class="empty-state-mini">
-                    <i class="fa-solid fa-receipt"></i>
-                    <p>No expense data to display yet. Add an expense to see breakdown.</p>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="content-card chart-card draggable-widget" data-widget-id="cashflow-chart">
-            <span class="widget-drag-handle"><i class="fa-solid fa-grip-vertical"></i> Drag</span>
-            <div class="card-header">
-                <h3><i class="fa-solid fa-chart-column"></i> Cash Flow ({{ current_user.currency_code }})</h3>
-            </div>
-            <div class="card-body chart-body">
-                {% if total_income > 0 or total_expense > 0 %}
-                <canvas id="cashFlowChart"></canvas>
-                {% else %}
-                <div class="empty-state-mini">
-                    <i class="fa-solid fa-chart-simple"></i>
-                    <p>No financial activity recorded yet.</p>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
+    <!-- React Dashboard (shadcn dashboard-4) -->
+    <div id="react-dashboard-root"></div>
+    <script type="application/json" id="react-dashboard-data">{{ react_dashboard_data | safe }}</script>
 
     <!-- Transactions Management Table -->
     <div class="content-card transactions-card">
@@ -412,4 +243,9 @@
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block react_dashboard %}
+<link rel="stylesheet" href="{{ url_for('static', filename='react-dashboard/assets/main.css') }}">
+<script type="module" src="{{ url_for('static', filename='react-dashboard/assets/main.js') }}"></script>
 {% endblock %}

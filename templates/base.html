@@ -200,6 +200,7 @@
 
     <!-- Custom JavaScript -->
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block react_dashboard %}{% endblock %}
     {% block scripts %}{% endblock %}
 </body>
 </html>

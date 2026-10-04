@@ -1,43 +1,67 @@
-import React from "react";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Item, ItemContent, ItemTitle, ItemDescription, ItemActions } from "@/components/ui/item";
-import { Badge } from "@/components/ui/badge";
+"use client";
 
-const categories = [
-  { name: "Housing & Rent", share: 38, amount: "$1,850", trend: "+2%" },
-  { name: "Food & Dining", share: 22, amount: "$840", trend: "-5%" },
-  { name: "Tech & Software", share: 18, amount: "$620", trend: "0%" },
-  { name: "Investments", share: 14, amount: "$500", trend: "+12%" },
-];
+import { Card } from "@/components/ui/card";
+import { type DashboardData, formatMoney } from "@/lib/dashboard-data";
 
-export function CategoryRankChart() {
+export function CategoryRankChart({ data }: { data: DashboardData }) {
+  const { symbol } = data.currency;
+  const categories = data.topCategories;
+  const maxShare = categories.reduce((max, item) => Math.max(max, item.share), 0);
+
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-base font-semibold">Category Ranking</CardTitle>
-        <CardDescription>Top budget allocations this cycle</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-2 pt-2">
-        {categories.map((cat, idx) => (
-          <Item key={cat.name} variant="outline" size="sm" className="justify-between">
-            <ItemContent>
-              <ItemTitle className="text-xs font-semibold">{cat.name}</ItemTitle>
-              <div className="w-full bg-muted h-1.5 rounded-full overflow-hidden mt-1">
-                <div
-                  className="bg-primary h-full rounded-full"
-                  style={{ width: `${cat.share}%` }}
-                />
+    <Card className="rd-card gap-0 border-border/70 bg-card p-6 shadow-none">
+      <div className="mb-6">
+        <h3 className="text-[15px] font-medium text-card-foreground">
+          Top spending categories
+        </h3>
+        <p className="mt-1 text-[13px] text-muted-foreground">
+          Share of total expenses
+        </p>
+      </div>
+
+      {categories.length > 0 ? (
+        <ol className="flex flex-col gap-4">
+          {categories.map((item, index) => (
+            <li key={item.name} className="flex flex-col gap-2">
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="flex min-w-0 items-baseline gap-2">
+                  <span className="w-4 shrink-0 text-[12px] tabular-nums text-muted-foreground">
+                    {index + 1}
+                  </span>
+                  <span className="truncate text-[13px] text-card-foreground">
+                    {item.name}
+                  </span>
+                </span>
+                <span className="shrink-0 text-[13px] tabular-nums text-muted-foreground">
+                  {formatMoney(item.amount, symbol)}
+                </span>
               </div>
-            </ItemContent>
-            <ItemActions className="flex items-center gap-2 pl-3">
-              <span className="text-xs font-mono font-bold">{cat.amount}</span>
-              <Badge variant="outline" className="text-[10px] px-1.5">
-                {cat.share}%
-              </Badge>
-            </ItemActions>
-          </Item>
-        ))}
-      </CardContent>
+              <div className="flex items-center gap-3">
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full bg-chart-1"
+                    style={{
+                      width: `${maxShare > 0 ? (item.share / maxShare) * 100 : 0}%`,
+                    }}
+                  />
+                </div>
+                <span className="w-11 shrink-0 text-right text-[12px] tabular-nums text-muted-foreground">
+                  {item.share.toFixed(1)}%
+                </span>
+              </div>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <div className="flex flex-col items-center justify-center gap-1 py-6">
+          <p className="text-[15px] font-medium text-card-foreground">
+            No categories yet
+          </p>
+          <p className="text-[13px] text-muted-foreground">
+            Category breakdown appears after you log expenses.
+          </p>
+        </div>
+      )}
     </Card>
   );
 }
