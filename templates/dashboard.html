@@ -93,6 +93,79 @@
          data-income="{{ total_income }}" 
          data-expense="{{ total_expense }}" 
          data-currency="{{ current_user.currency_symbol }}">
+        
+        <!-- Animated Flow Overview Card -->
+        <div class="animated-card-container">
+            <div class="card-header">
+                <h3><i class="fa-solid fa-compass"></i> Cash Flow Overview</h3>
+                <span class="badge badge-count">{{ current_user.currency_code }}</span>
+            </div>
+
+            <div class="animated-card-stage">
+                <div class="animated-card-svg-wrapper">
+                    <svg id="animated-dots-svg" class="animated-card-svg" viewBox="0 0 448 448" aria-hidden="true"></svg>
+
+                    <!-- Center Text Overlay -->
+                    <div class="animated-card-overlay">
+                        <div class="animated-card-overlay-label">TOTAL BALANCE</div>
+                        <div class="animated-card-overlay-val">
+                            {{ current_user.currency_symbol }}{{ "%.2f"|format(balance) }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gradient Fade Overlay -->
+                <div class="animated-card-gradient-fade"></div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="animated-card-bottom">
+                <div class="animated-card-metrics-row">
+                    <!-- Income Column -->
+                    <div class="animated-card-metric-col">
+                        <div class="animated-card-metric-header">
+                            <span class="animated-card-pill-bar" style="background-color: #5A8CEF;"></span>
+                            <span class="animated-card-metric-title">Income</span>
+                        </div>
+                        <div class="animated-card-metric-val">
+                            +{{ current_user.currency_symbol }}{{ "%.2f"|format(total_income) }}
+                        </div>
+                        <span class="animated-card-metric-tag" style="color: #5A8CEF;">
+                            {% if total_income + total_expense > 0 %}
+                                {{ "%.1f"|format((total_income / (total_income + total_expense)) * 100) }}% flow
+                            {% else %}
+                                Active
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <!-- Expenses Column -->
+                    <div class="animated-card-metric-col">
+                        <div class="animated-card-metric-header">
+                            <span class="animated-card-pill-bar" style="background-color: #4B7A63;"></span>
+                            <span class="animated-card-metric-title">Expenses</span>
+                        </div>
+                        <div class="animated-card-metric-val">
+                            -{{ current_user.currency_symbol }}{{ "%.2f"|format(total_expense) }}
+                        </div>
+                        <span class="animated-card-metric-tag" style="color: #4B7A63;">
+                            {% if total_income + total_expense > 0 %}
+                                {{ "%.1f"|format((total_expense / (total_income + total_expense)) * 100) }}% flow
+                            {% else %}
+                                Active
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button type="button" class="animated-card-details-btn" onclick="document.querySelector('.transactions-card').scrollIntoView({ behavior: 'smooth' })">
+                    <span>View Transaction Ledger</span>
+                    <i class="fa-solid fa-arrow-down text-xs"></i>
+                </button>
+            </div>
+        </div>
+
         <div class="content-card chart-card">
             <div class="card-header">
                 <h3><i class="fa-solid fa-chart-pie"></i> Expense Breakdown ({{ current_user.currency_code }})</h3>

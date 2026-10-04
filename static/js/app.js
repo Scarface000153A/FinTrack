@@ -133,8 +133,57 @@ function validateRegisterForm() {
     return true;
 }
 
+// ==================== ANIMATED DASHBOARD CARD (CONCENTRIC SVG DOTS) ==================== //
+function initAnimatedDashboardCard() {
+    const svgEl = document.getElementById("animated-dots-svg");
+    if (!svgEl) return;
+
+    const generateDots = (count, radius, centerX, centerY) => {
+        const dots = [];
+        for (let i = 0; i < count; i++) {
+            const angle = (i / count) * 2 * Math.PI;
+            const x = Math.round((centerX + radius * Math.cos(angle)) * 1000) / 1000;
+            const y = Math.round((centerY + radius * Math.sin(angle)) * 1000) / 1000;
+            dots.push({ x, y, delay: i * 0.02 });
+        }
+        return dots;
+    };
+
+    const outerDots = generateDots(48, 185, 203, 200);
+    const innerDots = generateDots(36, 155, 203, 200);
+
+    svgEl.innerHTML = "";
+
+    // Outer dots (#5A8CEF)
+    outerDots.forEach((dot) => {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", dot.x);
+        circle.setAttribute("cy", dot.y);
+        circle.setAttribute("r", "10");
+        circle.setAttribute("fill", "#5A8CEF");
+        circle.classList.add("anim-dot", "dot-outer");
+        circle.style.animationDelay = `${dot.delay}s`;
+        svgEl.appendChild(circle);
+    });
+
+    // Inner dots (#4B7A63)
+    innerDots.forEach((dot) => {
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", dot.x);
+        circle.setAttribute("cy", dot.y);
+        circle.setAttribute("r", "10");
+        circle.setAttribute("fill", "#4B7A63");
+        circle.classList.add("anim-dot", "dot-inner");
+        circle.style.animationDelay = `${0.2 + dot.delay}s`;
+        svgEl.appendChild(circle);
+    });
+}
+
 // ==================== DOM READY INITIALIZATION ==================== //
 document.addEventListener("DOMContentLoaded", () => {
+    // 0. Initialize Animated Concentric Dots Card
+    initAnimatedDashboardCard();
+
     // 1. Auto-dismiss flash alerts after 6 seconds
     const alerts = document.querySelectorAll(".alert");
     alerts.forEach((alert) => {

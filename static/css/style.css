@@ -637,6 +637,185 @@ body {
     gap: 1.25rem;
 }
 
+/* ================== ANIMATED DASHBOARD CARD ================== */
+.animated-card-container {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.animated-card-container:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.animated-card-stage {
+    position: relative;
+    padding: 1rem 0.5rem 0 0.5rem;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 340px;
+}
+
+.animated-card-svg-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    height: 380px;
+    margin: 0 auto;
+}
+
+.animated-card-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.anim-dot {
+    opacity: 0;
+    transform-origin: center;
+    animation: dotPopIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes dotPopIn {
+    0% {
+        opacity: 0;
+        transform: scale(0);
+    }
+    100% {
+        opacity: 0.65;
+        transform: scale(1);
+    }
+}
+
+.animated-card-container:hover .anim-dot {
+    opacity: 0.9;
+}
+
+/* Center Text Overlay */
+.animated-card-overlay {
+    position: absolute;
+    top: 42%;
+    left: 45%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.animated-card-overlay-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+}
+
+.animated-card-overlay-val {
+    font-size: 2.15rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+/* Gradient Fade Overlay for Bottom Half */
+.animated-card-gradient-fade {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent 0%, transparent 45%, var(--bg-card) 78%);
+    z-index: 10;
+}
+
+/* Bottom Metrics Section */
+.animated-card-bottom {
+    position: relative;
+    z-index: 15;
+    padding: 0.75rem 1.25rem 1.25rem 1.25rem;
+    margin-top: -3.5rem;
+}
+
+.animated-card-metrics-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.1rem;
+}
+
+.animated-card-metric-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.animated-card-metric-header {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.animated-card-pill-bar {
+    width: 3.5px;
+    height: 14px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.animated-card-metric-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.animated-card-metric-val {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.animated-card-metric-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.animated-card-details-btn {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.animated-card-details-btn:hover {
+    background-color: var(--bg-card-hover);
+    border-color: var(--border-focus);
+    transform: translateY(-1px);
+}
+
+.animated-card-details-btn:active {
+    transform: translateY(0);
+}
+
 .content-card {
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
