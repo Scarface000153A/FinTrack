@@ -2,6 +2,14 @@
 
 {% block title %}Advanced Dashboard - FinTrack{% endblock %}
 
+{% block body_class %}page-advanced{% endblock %}
+
+{% block theme_color %}#0d0d0d{% endblock %}
+
+{% block page_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/monochrome.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="dashboard-wrapper">
     <div class="page-header">

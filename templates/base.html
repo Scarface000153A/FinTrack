@@ -10,7 +10,7 @@
 
     <!-- PWA & Mobile Meta Tags -->
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="theme-color" content="{% block theme_color %}#2563eb{% endblock %}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Scarface000153A">
@@ -29,6 +29,7 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block page_styles %}{% endblock %}
 
     <!-- Early Theme Loader Script (Prevents White Flash in Dark Mode) -->
     <script>
@@ -39,7 +40,7 @@
         })();
     </script>
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
     <!-- Navbar -->
     <header class="navbar">
         <div class="nav-container">
