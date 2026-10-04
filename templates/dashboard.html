@@ -89,13 +89,27 @@
     </div>
 
     <!-- Charts & Analytics Section -->
+    <div class="widget-customizer-toolbar">
+        <div class="widget-customizer-info">
+            <i class="fa-solid fa-grip-vertical"></i>
+            <span><strong>Customizable Dashboard:</strong> Drag and drop cards to rearrange your analytics workspace freely.</span>
+        </div>
+        <div class="widget-customizer-actions">
+            <button type="button" class="btn btn-sm btn-outline text-xs" onclick="resetWidgetLayout()">
+                <i class="fa-solid fa-rotate-left"></i>
+                <span>Reset Layout</span>
+            </button>
+        </div>
+    </div>
+
     <div class="analytics-grid" id="dashboard-analytics" 
          data-income="{{ total_income }}" 
          data-expense="{{ total_expense }}" 
          data-currency="{{ current_user.currency_symbol }}">
         
         <!-- Animated Flow Overview Card -->
-        <div class="animated-card-container">
+        <div class="animated-card-container draggable-widget" data-widget-id="flow-overview">
+            <span class="widget-drag-handle"><i class="fa-solid fa-grip-vertical"></i> Drag</span>
             <div class="card-header">
                 <h3><i class="fa-solid fa-compass"></i> Cash Flow Overview</h3>
                 <span class="badge badge-count">{{ current_user.currency_code }}</span>
@@ -166,7 +180,8 @@
             </div>
         </div>
 
-        <div class="content-card chart-card">
+        <div class="content-card chart-card draggable-widget" data-widget-id="expense-chart">
+            <span class="widget-drag-handle"><i class="fa-solid fa-grip-vertical"></i> Drag</span>
             <div class="card-header">
                 <h3><i class="fa-solid fa-chart-pie"></i> Expense Breakdown ({{ current_user.currency_code }})</h3>
             </div>
@@ -182,7 +197,8 @@
             </div>
         </div>
 
-        <div class="content-card chart-card">
+        <div class="content-card chart-card draggable-widget" data-widget-id="cashflow-chart">
+            <span class="widget-drag-handle"><i class="fa-solid fa-grip-vertical"></i> Drag</span>
             <div class="card-header">
                 <h3><i class="fa-solid fa-chart-column"></i> Cash Flow ({{ current_user.currency_code }})</h3>
             </div>

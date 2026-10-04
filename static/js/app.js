@@ -179,10 +179,98 @@ function initAnimatedDashboardCard() {
     });
 }
 
+// ==================== DRAGGABLE WIDGET GRID (CUSTOMIZABLE DASHBOARD) ==================== //
+function initDraggableWidgetGrid() {
+    const grid = document.querySelector(".analytics-grid");
+    if (!grid) return;
+
+    const widgets = grid.querySelectorAll(".draggable-widget");
+    if (!widgets.length) return;
+
+    // 1. Restore saved order from localStorage if available
+    const savedOrder = localStorage.getItem("fintrack_widget_order");
+    if (savedOrder) {
+        try {
+            const orderIds = JSON.parse(savedOrder);
+            orderIds.forEach((id) => {
+                const widget = grid.querySelector(`[data-widget-id="${id}"]`);
+                if (widget) grid.appendChild(widget);
+            });
+        } catch (e) {
+            console.warn("Could not parse saved widget order", e);
+        }
+    }
+
+    let draggedItem = null;
+
+    widgets.forEach((widget) => {
+        widget.setAttribute("draggable", "true");
+        widget.classList.add("is-draggable");
+
+        widget.addEventListener("dragstart", (e) => {
+            draggedItem = widget;
+            widget.classList.add("widget-dragging");
+            e.dataTransfer.effectAllowed = "move";
+            e.dataTransfer.setData("text/plain", widget.getAttribute("data-widget-id") || "");
+        });
+
+        widget.addEventListener("dragend", () => {
+            if (draggedItem) {
+                draggedItem.classList.remove("widget-dragging");
+                draggedItem = null;
+            }
+            grid.querySelectorAll(".draggable-widget").forEach((w) => {
+                w.classList.remove("widget-drag-over");
+            });
+
+            // Save new order to localStorage
+            const currentOrder = Array.from(grid.querySelectorAll(".draggable-widget")).map((w) =>
+                w.getAttribute("data-widget-id")
+            );
+            localStorage.setItem("fintrack_widget_order", JSON.stringify(currentOrder));
+        });
+
+        widget.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
+            if (widget !== draggedItem) {
+                widget.classList.add("widget-drag-over");
+            }
+        });
+
+        widget.addEventListener("dragleave", () => {
+            widget.classList.remove("widget-drag-over");
+        });
+
+        widget.addEventListener("drop", (e) => {
+            e.preventDefault();
+            widget.classList.remove("widget-drag-over");
+
+            if (draggedItem && draggedItem !== widget) {
+                const children = Array.from(grid.children);
+                const draggedIdx = children.indexOf(draggedItem);
+                const targetIdx = children.indexOf(widget);
+
+                if (draggedIdx < targetIdx) {
+                    widget.after(draggedItem);
+                } else {
+                    widget.before(draggedItem);
+                }
+            }
+        });
+    });
+}
+
+function resetWidgetLayout() {
+    localStorage.removeItem("fintrack_widget_order");
+    window.location.reload();
+}
+
 // ==================== DOM READY INITIALIZATION ==================== //
 document.addEventListener("DOMContentLoaded", () => {
-    // 0. Initialize Animated Concentric Dots Card
+    // 0. Initialize Animated Concentric Dots Card & Draggable Grid
     initAnimatedDashboardCard();
+    initDraggableWidgetGrid();
 
     // 1. Auto-dismiss flash alerts after 6 seconds
     const alerts = document.querySelectorAll(".alert");
