@@ -425,6 +425,49 @@ def dashboard():
         today_date=date.today().isoformat()
     )
 
+@app.route("/dashboard/advanced")
+@login_required
+def dashboard_advanced():
+    """Advanced Analytics Dashboard with Charts and Visual Analytics"""
+    user_id = session["user_id"]
+    active_currency = normalize_currency_code(session.get("currency", "INR"))
+
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            SELECT type, amount, currency, category, date
+            FROM transactions
+            WHERE user_id = ?
+            ORDER BY date DESC
+            """,
+            (user_id,)
+        )
+        all_transactions = cursor.fetchall()
+
+    # Calculate totals with currency conversion
+    total_income = 0.0
+    total_expense = 0.0
+
+    for t in all_transactions:
+        raw_amt = float(t["amount"])
+        raw_curr = normalize_currency_code(t["currency"] if t["currency"] else active_currency)
+        converted_amt = convert_amount(raw_amt, raw_curr, active_currency)
+
+        if t["type"] == "income":
+            total_income += converted_amt
+        else:
+            total_expense += converted_amt
+
+    balance = total_income - total_expense
+
+    return render_template(
+        "dashboard_advanced.html",
+        total_income=total_income,
+        total_expense=total_expense,
+        balance=balance
+    )
+
 @app.route("/transactions/add", methods=["POST"])
 @login_required
 def add_transaction():

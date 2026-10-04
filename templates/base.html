@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}FinTrack - Personal Finance Tracker{% endblock %}</title>
+    <title>{% block title %}Scarface000153A - Personal Finance Tracker{% endblock %}</title>
     
     <!-- Site Favicon -->
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
@@ -13,7 +13,7 @@
     <meta name="theme-color" content="#2563eb">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="FinTrack">
+    <meta name="apple-mobile-web-app-title" content="Scarface000153A">
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicon.svg') }}">
 
     <!-- Google Fonts -->
@@ -33,7 +33,7 @@
     <!-- Early Theme Loader Script (Prevents White Flash in Dark Mode) -->
     <script>
         (function() {
-            const savedTheme = localStorage.getItem("fintrack_theme") || 
+            const savedTheme = localStorage.getItem("scarface_theme") ||
                 (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
             document.documentElement.setAttribute("data-theme", savedTheme);
         })();
@@ -47,14 +47,18 @@
                 <div class="brand-icon">
                     <i class="fa-solid fa-wallet"></i>
                 </div>
-                <span>FinTrack</span>
+                <span>Scarface000153A</span>
             </a>
 
             {% if current_user %}
             <nav class="nav-links">
-                <a href="{{ url_for('dashboard') }}" class="nav-link active">
+                <a href="{{ url_for('dashboard') }}" class="nav-link">
                     <i class="fa-solid fa-chart-pie"></i>
                     <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('dashboard_advanced') }}" class="nav-link">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Advanced</span>
                 </a>
             </nav>
             {% endif %}
@@ -179,7 +183,7 @@
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-left">
-                <p>&copy; 2026 <strong>FinTrack</strong> - Personal Finance Platform.</p>
+                <p>&copy; 2026 <strong>Scarface000153A</strong> - Personal Finance Platform.</p>
                 <p class="data-privacy"><i class="fa-solid fa-lock"></i> Isolated User Sandbox &bull; Live Currency Conversion</p>
             </div>
             <div class="footer-links">

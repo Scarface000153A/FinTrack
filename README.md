@@ -1,6 +1,8 @@
 # FinTrack - Personal Finance and Currency Intelligence Platform
 
-A personal finance web application built with Python (Flask), SQLite, Chart.js, and standard CSS and JavaScript.
+A personal finance web application with **dual frontend architecture**:
+- **Flask + Jinja2** (current): `templates/`, `static/` — Server-rendered, zero-JS-bundle
+- **Next.js + React** (new): `frontend/` — SPA with draggable dashboard widgets, Recharts
 
 ---
 
@@ -66,7 +68,40 @@ python -m unittest test_app.py -v
 
 ---
 
-## Production Cloud Deployment (Render.com)
+## 🚀 React Frontend (Next.js)
+
+Located in `frontend/` — A modern SPA with interactive dashboard widgets.
+
+### Quick Start
+
+```bash
+# Terminal 1: Start Flask API
+cd finance_tracker
+python run.py
+
+# Terminal 2: Start Next.js Dev Server
+cd frontend
+npm run dev
+```
+
+- **Flask API**: `http://localhost:5000`
+- **Next.js UI**: `http://localhost:3000` (proxies `/api/*` to Flask)
+
+### Features
+- Draggable, customizable dashboard widgets (framer-motion)
+- Recharts visualizations: Revenue, Refund Rate, Category Rankings
+- shadcn/ui + Tailwind CSS v4 design system
+- Dark/Light mode with CSS variables
+- TypeScript throughout
+
+### Build for Production
+```bash
+cd frontend
+npm run build
+npm run start
+```
+
+See `frontend/README.md` for details.
 
 FinTrack supports automatic production deployment via `Procfile`, `gunicorn`, and dynamic database engine resolution (PostgreSQL in cloud, SQLite locally).
 
