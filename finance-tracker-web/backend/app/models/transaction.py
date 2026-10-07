@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Enum, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Enum, ForeignKey, Numeric
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.core.database import Base
@@ -13,7 +13,7 @@ class Transaction(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    amount = Column(String, nullable=False)
+    amount = Column(Numeric(precision=10, scale=2), nullable=False)
     category = Column(String, nullable=False)
     description = Column(String, nullable=True)
     transaction_type = Column(Enum(TransactionType), nullable=False)
