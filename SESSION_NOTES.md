@@ -3,7 +3,7 @@
 ## Current Status (2026-10-08)
 
 ### Latest Commit
-- `72a2e51` - Update session notes with final state
+- `8bb7da7` - Update session notes with final state
 
 ### Problem
 Render deployment fails with `cargo metadata` / `maturin` error:
