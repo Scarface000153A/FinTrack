@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Finance Tracker</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <a href="index.html"><h1>💰 Finance Tracker</h1></a>
+                </div>
+                <div class="nav-links">
+                    <a href="login.html">Already have an account?</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Sign Up Form -->
+        <section class="auth-section">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <h2>Create Your Account</h2>
+                    <p class="auth-subtitle">Start tracking your finances today</p>
+
+                    <div v-if="errorMessage" class="alert alert-error">
+                        {{ errorMessage }}
+                    </div>
+
+                    <div v-if="successMessage" class="alert alert-success">
+                        {{ successMessage }}
+                    </div>
+
+                    <form @submit.prevent="handleSignup" class="auth-form">
+                        <div class="form-group">
+                            <label for="fullname">Full Name</label>
+                            <input
+                                type="text"
+                                id="fullname"
+                                v-model="formData.fullName"
+                                placeholder="John Doe"
+                                :disabled="loading"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="username">Username *</label>
+                            <input
+                                type="text"
+                                id="username"
+                                v-model="formData.username"
+                                placeholder="johndoe"
+                                required
+                                :disabled="loading"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input
+                                type="email"
+                                id="email"
+                                v-model="formData.email"
+                                placeholder="john@example.com"
+                                required
+                                :disabled="loading"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password *</label>
+                            <input
+                                type="password"
+                                id="password"
+                                v-model="formData.password"
+                                placeholder="Min. 6 characters"
+                                required
+                                minlength="6"
+                                :disabled="loading"
+                            >
+                            <small class="form-hint">Password must be at least 6 characters long</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm Password *</label>
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                v-model="formData.confirmPassword"
+                                placeholder="Re-enter your password"
+                                required
+                                :disabled="loading"
+                            >
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn-primary btn-full"
+                            :disabled="loading"
+                        >
+                            <span v-if="!loading">Create Account</span>
+                            <span v-else>Creating Account...</span>
+                        </button>
+                    </form>
+
+                    <div class="auth-footer">
+                        <p>Already have an account? <a href="login.html">Log in</a></p>
+                    </div>
+                </div>
+
+                <div class="auth-benefits">
+                    <h3>Join Finance Tracker Today</h3>
+                    <ul>
+                        <li>✓ Track income and expenses effortlessly</li>
+                        <li>✓ Secure and encrypted data storage</li>
+                        <li>✓ Beautiful analytics and reports</li>
+                        <li>✓ Access from anywhere, anytime</li>
+                        <li>✓ 100% free to use</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    formData: {
+                        fullName: '',
+                        username: '',
+                        email: '',
+                        password: '',
+                        confirmPassword: ''
+                    },
+                    loading: false,
+                    errorMessage: '',
+                    successMessage: ''
+                };
+            },
+            methods: {
+                async handleSignup() {
+                    this.errorMessage = '';
+                    this.successMessage = '';
+
+                    // Validation
+                    if (this.formData.password !== this.formData.confirmPassword) {
+                        this.errorMessage = 'Passwords do not match!';
+                        return;
+                    }
+
+                    if (this.formData.password.length < 6) {
+                        this.errorMessage = 'Password must be at least 6 characters long';
+                        return;
+                    }
+
+                    this.loading = true;
+
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/auth/register`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                email: this.formData.email,
+                                username: this.formData.username,
+                                password: this.formData.password,
+                                full_name: this.formData.fullName || null
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            this.successMessage = 'Account created successfully! Redirecting to login...';
+
+                            // Reset form
+                            this.formData = {
+                                fullName: '',
+                                username: '',
+                                email: '',
+                                password: '',
+                                confirmPassword: ''
+                            };
+
+                            // Redirect to login page after 2 seconds
+                            setTimeout(() => {
+                                window.location.href = 'login.html';
+                            }, 2000);
+                        } else {
+                            this.errorMessage = data.detail || 'Registration failed. Please try again.';
+                        }
+                    } catch (error) {
+                        console.error('Signup error:', error);
+                        this.errorMessage = 'Unable to connect to the server. Please try again later.';
+                    } finally {
+                        this.loading = false;
+                    }
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

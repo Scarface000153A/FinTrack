@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Finance Tracker</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Navigation -->
+        <nav class="navbar navbar-dashboard">
+            <div class="container">
+                <div class="nav-brand">
+                    <h1>💰 Finance Tracker</h1>
+                </div>
+                <div class="nav-links">
+                    <span class="user-greeting">Hello, {{ user.username }}!</span>
+                    <button @click="logout" class="btn-secondary">Logout</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Dashboard Content -->
+        <main class="dashboard">
+            <div class="container">
+                <!-- Summary Cards -->
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-icon income">💰</div>
+                        <div class="summary-content">
+                            <span class="summary-label">Total Income</span>
+                            <span class="summary-value">${{ stats.total_income.toFixed(2) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="summary-icon expense">💸</div>
+                        <div class="summary-content">
+                            <span class="summary-label">Total Expenses</span>
+                            <span class="summary-value">${{ stats.total_expenses.toFixed(2) }}</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="summary-icon balance">📊</div>
+                        <div class="summary-content">
+                            <span class="summary-label">Balance</span>
+                            <span class="summary-value" :class="stats.balance >= 0 ? 'positive' : 'negative'">
+                                ${{ stats.balance.toFixed(2) }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <div class="summary-icon transactions">📝</div>
+                        <div class="summary-content">
+                            <span class="summary-label">Transactions</span>
+                            <span class="summary-value">{{ stats.transaction_count }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Transaction Button -->
+                <div class="action-bar">
+                    <button @click="showAddModal = true" class="btn-primary">
+                        ➕ Add Transaction
+                    </button>
+                    <div class="filters">
+                        <select v-model="filterType" @change="loadTransactions" class="filter-select">
+                            <option value="">All Types</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                        <select v-model="filterCategory" @change="loadTransactions" class="filter-select">
+                            <option value="">All Categories</option>
+                            <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Transactions List -->
+                <div class="transactions-section">
+                    <h2>Recent Transactions</h2>
+
+                    <div v-if="loading" class="loading">Loading transactions...</div>
+
+                    <div v-else-if="transactions.length === 0" class="empty-state">
+                        <p>No transactions yet. Add your first transaction to get started!</p>
+                    </div>
+
+                    <div v-else class="transactions-list">
+                        <div
+                            v-for="transaction in transactions"
+                            :key="transaction.id"
+                            class="transaction-item"
+                            :class="transaction.transaction_type"
+                        >
+                            <div class="transaction-icon">
+                                {{ transaction.transaction_type === 'income' ? '💵' : '💳' }}
+                            </div>
+                            <div class="transaction-details">
+                                <span class="transaction-category">{{ transaction.category }}</span>
+                                <span class="transaction-description">{{ transaction.description || 'No description' }}</span>
+                                <span class="transaction-date">{{ formatDate(transaction.transaction_date) }}</span>
+                            </div>
+                            <div class="transaction-amount" :class="transaction.transaction_type">
+                                {{ transaction.transaction_type === 'income' ? '+' : '-' }}${{ transaction.amount.toFixed(2) }}
+                            </div>
+                            <div class="transaction-actions">
+                                <button @click="editTransaction(transaction)" class="btn-icon" title="Edit">✏️</button>
+                                <button @click="deleteTransaction(transaction.id)" class="btn-icon" title="Delete">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Add/Edit Transaction Modal -->
+        <div v-if="showAddModal || showEditModal" class="modal-overlay" @click.self="closeModals">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>{{ showEditModal ? 'Edit Transaction' : 'Add New Transaction' }}</h3>
+                    <button @click="closeModals" class="modal-close">&times;</button>
+                </div>
+
+                <div v-if="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
+
+                <form @submit.prevent="showEditModal ? updateTransaction() : addTransaction()" class="modal-form">
+                    <div class="form-group">
+                        <label>Transaction Type *</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" v-model="transactionForm.transaction_type" value="income" required>
+                                <span>Income</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" v-model="transactionForm.transaction_type" value="expense" required>
+                                <span>Expense</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">Amount *</label>
+                        <input
+                            type="number"
+                            id="amount"
+                            v-model.number="transactionForm.amount"
+                            placeholder="0.00"
+                            step="0.01"
+                            min="0.01"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                        <input
+                            type="text"
+                            id="category"
+                            v-model="transactionForm.category"
+                            placeholder="e.g., Salary, Groceries, Rent"
+                            required
+                            list="category-suggestions"
+                        >
+                        <datalist id="category-suggestions">
+                            <option v-for="cat in categories" :key="cat" :value="cat">
+                        </datalist>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea
+                            id="description"
+                            v-model="transactionForm.description"
+                            placeholder="Optional notes about this transaction"
+                            rows="3"
+                        ></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input
+                            type="datetime-local"
+                            id="date"
+                            v-model="transactionForm.transaction_date"
+                        >
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" @click="closeModals" class="btn-secondary">Cancel</button>
+                        <button type="submit" class="btn-primary" :disabled="saving">
+                            {{ saving ? 'Saving...' : (showEditModal ? 'Update' : 'Add Transaction') }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

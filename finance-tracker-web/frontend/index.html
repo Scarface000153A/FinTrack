@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker - Smart Money Management</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-brand">
+                    <h1>💰 Finance Tracker</h1>
+                </div>
+                <div class="nav-links">
+                    <a href="#features">Features</a>
+                    <a href="#about">About</a>
+                    <a href="login.html" class="btn-secondary">Login</a>
+                    <a href="signup.html" class="btn-primary">Get Started</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">Take Control of Your Finances</h1>
+                    <p class="hero-subtitle">Track expenses, manage income, and achieve your financial goals with our intuitive finance tracker.</p>
+                    <div class="hero-buttons">
+                        <a href="signup.html" class="btn-primary btn-large">Start Free Today</a>
+                        <a href="#features" class="btn-secondary btn-large">Learn More</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="stats-card">
+                        <div class="stat">
+                            <span class="stat-label">Total Balance</span>
+                            <span class="stat-value">$12,450</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">This Month</span>
+                            <span class="stat-value positive">+$2,340</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="container">
+                <h2 class="section-title">Everything You Need to Manage Your Money</h2>
+                <div class="features-grid">
+                    <div class="feature-card" v-for="feature in features" :key="feature.id">
+                        <div class="feature-icon">{{ feature.icon }}</div>
+                        <h3>{{ feature.title }}</h3>
+                        <p>{{ feature.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about">
+            <div class="container">
+                <h2 class="section-title">Why Choose Finance Tracker?</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <h3>Simple, Secure, and Powerful</h3>
+                        <p>Built with modern technology and security best practices, Finance Tracker helps you stay on top of your financial health. Track every dollar, understand your spending patterns, and make informed financial decisions.</p>
+                        <ul class="benefits-list">
+                            <li>✓ Bank-level security with encrypted data</li>
+                            <li>✓ Real-time synchronization across devices</li>
+                            <li>✓ Detailed reports and analytics</li>
+                            <li>✓ No hidden fees or subscriptions</li>
+                        </ul>
+                    </div>
+                    <div class="about-image">
+                        <div class="dashboard-preview">
+                            <div class="preview-header">
+                                <span class="preview-dot"></span>
+                                <span class="preview-dot"></span>
+                                <span class="preview-dot"></span>
+                            </div>
+                            <div class="preview-content">
+                                <div class="preview-chart"></div>
+                                <div class="preview-stats">
+                                    <div class="preview-stat-bar"></div>
+                                    <div class="preview-stat-bar"></div>
+                                    <div class="preview-stat-bar"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta">
+            <div class="container">
+                <h2>Ready to Get Started?</h2>
+                <p>Join thousands of users who are already managing their finances better.</p>
+                <a href="signup.html" class="btn-primary btn-large">Create Free Account</a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <p>&copy; 2026 Finance Tracker. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
