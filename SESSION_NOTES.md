@@ -3,7 +3,7 @@
 ## Current Status (2026-10-08)
 
 ### Latest Commit
-- `8a63045` - Fix: pin pydantic to 2.10.0 to avoid maturin/cargo build failure on Render
+- `db12271` - Add session notes for Render deployment
 
 ### Problem
 Render deployment fails with `cargo metadata` / `maturin` error:
@@ -31,14 +31,6 @@ python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 python-multipart==0.0.12
 ```
-
-### What Was Fixed in Code
-1. `config.py` - BACKEND_CORS_ORIGINS fixed from @property to List[str] field with validator
-2. `transaction.py` - amount changed from String to Numeric(precision=10, scale=2)
-3. `transactions.py` - Fixed import order, added float() conversions for summary stats
-4. `auth.py` - Fixed import order
-5. `schemas/` - Fixed field definitions
-6. `requirements.txt` - Pinned versions to avoid build failures
 
 ### If Still Failing
 The issue might be with `python-jose[cryptography]` which also has Rust dependencies. Try removing the `[cryptography]` extra:
