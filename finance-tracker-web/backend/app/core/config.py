@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings
 from typing import Optional
+import os
 
 class Settings(BaseSettings):
     # Application settings
@@ -15,8 +16,14 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    # CORS settings
-    BACKEND_CORS_ORIGINS: list = ["http://localhost:3000", "http://localhost:8080"]
+    # CORS settings - read from env var or use defaults
+    @property
+    def BACKEND_CORS_ORIGINS(self):
+        origins_env = os.environ.get("BACKEND_CORS_ORIGINS", "")
+        if origins_env:
+            return [origin.strip() for origin in origins_env.split(",")]
+        # Default origins for development
+        return ["http://localhost:3000", "http://localhost:8080"]
 
     class Config:
         env_file = ".env"
