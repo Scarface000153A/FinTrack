@@ -139,26 +139,26 @@ async def get_summary_stats(
 ):
     """Get summary statistics (total income, total expenses, balance)."""
 
-    from sqlalchemy import func
+    from sqlalchemy import func as sa_func
 
     # Calculate total income
-    total_income = db.query(func.sum(Transaction.amount)).filter(
+    total_income = db.query(sa_func.sum(Transaction.amount)).filter(
         Transaction.user_id == current_user.id,
         Transaction.transaction_type == TransactionType.INCOME
     ).scalar() or 0.0
 
     # Calculate total expenses
-    total_expenses = db.query(func.sum(Transaction.amount)).filter(
+    total_expenses = db.query(sa_func.sum(Transaction.amount)).filter(
         Transaction.user_id == current_user.id,
         Transaction.transaction_type == TransactionType.EXPENSE
     ).scalar() or 0.0
 
     # Calculate balance
-    balance = total_income - total_expenses
+    balance = float(total_income) - float(total_expenses)
 
     return {
-        "total_income": total_income,
-        "total_expenses": total_expenses,
+        "total_income": float(total_income),
+        "total_expenses": float(total_expenses),
         "balance": balance,
         "transaction_count": db.query(Transaction).filter(Transaction.user_id == current_user.id).count()
     }
