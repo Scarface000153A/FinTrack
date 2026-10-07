@@ -4,9 +4,6 @@ from app.core.config import settings
 from app.core.database import engine, Base
 from app.routers import auth, transactions
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
-
 # Initialize FastAPI app
 app = FastAPI(
     title=settings.APP_NAME,
@@ -26,6 +23,11 @@ app.add_middleware(
 # Include routers
 app.include_router(auth.router, prefix="/api")
 app.include_router(transactions.router, prefix="/api")
+
+@app.on_event("startup")
+async def startup_event():
+    """Create database tables on startup."""
+    Base.metadata.create_all(bind=engine)
 
 @app.get("/")
 async def root():
